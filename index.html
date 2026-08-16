@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOR ROZY ❤️</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    user-select:none;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color:#fff;
+}
+
+/* =========================================================
+   PASSWORD SCREEN
+========================================================= */
+#passwordScreen{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#020204;
+    transition:1s;
+}
+
+.passwordBox{
+    width:310px;
+    padding:25px 20px 28px;
+    border-radius:22px;
+    background:linear-gradient(145deg, rgba(255,30,100,.09), rgba(255,255,255,.025));
+    border:1px solid rgba(255,40,110,.22);
+    box-shadow:0 0 50px rgba(255,0,80,.08), inset 0 0 30px rgba(255,0,80,.03);
+    text-align:center;
+}
+
+.lockHeart{
+    font-size:42px;
+    margin-bottom:10px;
+    filter:drop-shadow(0 0 15px #ff1e63);
+    animation:smallBeat 1.2s infinite;
+}
+
+@keyframes smallBeat{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.12); }
+}
+
+.passwordTitle{
+    font-size:18px;
+    letter-spacing:3px;
+    color:#eee;
+    margin-bottom:5px;
+}
+
+.passwordSub{
+    color:#777;
+    font-size:11px;
+    margin-bottom:18px;
+}
+
+.display{
+    width:100%;
+    height:50px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:18px;
+    border-radius:12px;
+    background:#08080b;
+    border:1px solid rgba(255,255,255,.07);
+    color:#ff3e7d;
+    font-size:24px;
+    letter-spacing:8px;
+    box-shadow:inset 0 0 20px rgba(255,0,80,.04);
+}
+
+.keypad{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;
+}
+
+.key{
+    height:52px;
+    border:0;
+    border-radius:12px;
+    color:#ddd;
+    background:#111116;
+    font-size:18px;
+    cursor:pointer;
+    transition:transform .12s, background .2s, box-shadow .2s;
+}
+
+.key:hover{ background:#1b1b22; }
+.key:active{
+    transform:scale(.92);
+    background:#ff174f;
+    color:white;
+    box-shadow:0 0 20px rgba(255,23,79,.6);
+}
+
+.clearKey{ color:#ff4b83; }
+.enterKey{
+    color:#fff;
+    background:linear-gradient(135deg, #d9144c, #ff3672);
+}
+
+.error{
+    height:16px;
+    margin-top:10px;
+    font-size:11px;
+    color:#ff386f;
+    opacity:0;
+    transition:.3s;
+}
+
+.error.show{ opacity:1; }
+
+/* =========================================================
+   LOADING SCREEN
+========================================================= */
+#loadingScreen{
+    position:fixed;
+    inset:0;
+    z-index:900;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:#000;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity 1s, visibility 1s;
+}
+
+#loadingScreen.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.loadingHeart{
+    position:relative;
+    width:80px;
+    height:80px;
+    background:#ff174f;
+    transform:rotate(-45deg);
+    animation:loadingBeat 1s infinite;
+    filter:drop-shadow(0 0 25px #ff174f);
+}
+
+.loadingHeart::before, .loadingHeart::after{
+    content:"";
+    position:absolute;
+    width:80px;
+    height:80px;
+    background:#ff174f;
+    border-radius:50%;
+}
+
+.loadingHeart::before{ top:-40px; left:0; }
+.loadingHeart::after{ top:0; left:40px; }
+
+@keyframes loadingBeat{
+    0%,100%{ transform:rotate(-45deg) scale(1); }
+    30%{ transform:rotate(-45deg) scale(1.15); }
+    50%{ transform:rotate(-45deg) scale(1); }
+    70%{ transform:rotate(-45deg) scale(1.1); }
+}
+
+.loadingText{
+    margin-top:60px;
+    font-size:12px;
+    color:#888;
+    letter-spacing:4px;
+}
+
+.loadingBar{
+    width:200px;
+    height:2px;
+    margin-top:15px;
+    background:#151515;
+    overflow:hidden;
+}
+
+.loadingProgress{
+    width:0%;
+    height:100%;
+    background:#ff2160;
+    box-shadow:0 0 10px #ff2160;
+    transition:.15s;
+}
+
+/* =========================================================
+   MAIN 3D SCENE
+========================================================= */
+#main{
+    position:fixed;
+    inset:0;
+    background:radial-gradient(circle at center, #12000a 0%, #030004 50%, #000 85%);
+    opacity:0;
+    visibility:hidden;
+    transition:opacity 2s, visibility 2s;
+    perspective:1000px; /* 3D Perspective */
+    overflow:hidden;
+}
+
+#main.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.star{
+    position:absolute;
+    width:1px;
+    height:1px;
+    background:#ff4d83;
+    opacity:.5;
+    animation:starTwinkle 2s infinite alternate;
+}
+
+@keyframes starTwinkle{
+    from{ opacity:.1; transform:scale(.5); }
+    to{ opacity:.8; transform:scale(1.5); }
+}
+
+/* 3D Container */
+#heartContainer3D{
+    position:absolute;
+    width:100%;
+    height:100%;
+    transform-style:preserve-3d;
+    transition:transform 0.1s ease-out;
+}
+
+/* =========================================================
+   HEART WORDS 3D
+========================================================= */
+#wordHeart{
+    position:absolute;
+    width:0;
+    height:0;
+    left:50%;
+    top:50%;
+    transform-style:preserve-3d;
+}
+
+.word{
+    position:absolute;
+    left:0;
+    top:0;
+    color:#ff286c;
+    font-size:12px;
+    white-space:nowrap;
+    text-shadow:0 0 8px rgba(255,20,90,.8), 0 0 20px rgba(255,20,90,.3);
+    opacity:0;
+    transform-style:preserve-3d;
+    transition:opacity 1s, transform 1.5s cubic-bezier(.2,.8,.2,1);
+}
+
+.word.visible{
+    opacity:1;
+}
+
+/* =========================================================
+   CENTER ROZY
+========================================================= */
+#rozyCenter{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%) translateZ(40px);
+    opacity:0;
+    z-index:20;
+    text-align:center;
+    cursor:pointer;
+    transition:opacity 1s;
+}
+
+#rozyCenter.show{
+    opacity:1;
+}
+
+.rozy{
+    font-family:Georgia, serif;
+    font-size:48px;
+    font-weight:bold;
+    font-style:italic;
+    letter-spacing:4px;
+    color:#fff;
+    text-shadow:0 0 10px #ff1c60, 0 0 25px #ff1c60, 0 0 60px rgba(255,20,90,.8);
+    animation:rozyPulse 2s infinite;
+}
+
+.hint{
+    font-size:9px;
+    letter-spacing:2px;
+    color:rgba(255,255,255,0.4);
+    margin-top:4px;
+    text-transform:uppercase;
+}
+
+@keyframes rozyPulse{
+    0%,100%{ text-shadow:0 0 10px #ff1c60, 0 0 25px #ff1c60; }
+    50%{ text-shadow:0 0 15px #ff1c60, 0 0 45px #ff1c60, 0 0 80px rgba(255,20,90,.9); }
+}
+
+/* Orbit Ring */
+.orbit{
+    position:absolute;
+    width:220px;
+    height:220px;
+    left:50%;
+    top:50%;
+    margin-left:-110px;
+    margin-top:-110px;
+    border:1px solid rgba(255,35,105,.35);
+    border-radius:50%;
+    opacity:0;
+    z-index:15;
+    transform-style:preserve-3d;
+}
+
+.orbit.show{
+    opacity:1;
+    animation:orbitSpin 6s linear infinite;
+}
+
+.orbitHeart{
+    position:absolute;
+    left:50%;
+    top:-8px;
+    width:16px;
+    height:16px;
+    background:#ff2366;
+    transform:translateX(-50%) rotate(-45deg);
+    box-shadow:0 0 12px #ff2366;
+}
+
+.orbitHeart::before, .orbitHeart::after{
+    content:"";
+    position:absolute;
+    width:16px;
+    height:16px;
+    background:#ff2366;
+    border-radius:50%;
+}
+.orbitHeart::before{ top:-8px; left:0; }
+.orbitHeart::after{ top:0; left:8px; }
+
+@keyframes orbitSpin{
+    from{ transform:rotateZ(0deg) rotateX(60deg); }
+    to{ transform:rotateZ(360deg) rotateX(60deg); }
+}
+
+/* =========================================================
+   BOTTOM TEXT
+========================================================= */
+.bottom{
+    position:absolute;
+    left:50%;
+    bottom:30px;
+    transform:translateX(-50%);
+    text-align:center;
+    opacity:0;
+    transition:opacity 2s;
+    z-index:100;
+}
+
+.bottom.show{ opacity:1; }
+
+.coded{
+    font-size:9px;
+    letter-spacing:4px;
+    color:#666;
+    margin-bottom:6px;
+}
+
+.loveText{
+    font-family:Georgia, serif;
+    font-size:16px;
+    color:#ddd;
+    font-style:italic;
+}
+
+.loveHeart{
+    color:#ff286c;
+    display:inline-block;
+    animation:smallBeat 1s infinite;
+}
+
+/* =========================================================
+   LETTER MODAL (Double Click Message)
+========================================================= */
+#letterModal{
+    position:fixed;
+    inset:0;
+    z-index:2000;
+    background:rgba(2, 1, 5, 0.95);
+    backdrop-filter:blur(10px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity 0.8s, visibility 0.8s;
+}
+
+#letterModal.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.letterPaper{
+    width:85%;
+    max-width:500px;
+    min-height:300px;
+    padding:40px 30px;
+    border-radius:16px;
+    background:rgba(15, 8, 15, 0.6);
+    border:1px solid rgba(255, 40, 110, 0.3);
+    box-shadow:0 0 40px rgba(255, 20, 90, 0.15);
+    position:relative;
+}
+
+.letterContent{
+    font-family:'Georgia', serif;
+    font-size:18px;
+    line-height:1.8;
+    color:#ffdeeb;
+    text-shadow:0 0 10px rgba(255, 50, 120, 0.3);
+    white-space:pre-wrap;
+}
+
+.cursor{
+    display:inline-block;
+    width:2px;
+    height:20px;
+    background:#ff286c;
+    margin-left:4px;
+    animation:blink 0.8s infinite;
+    vertical-align:middle;
+}
+
+@keyframes blink{
+    0%,100%{ opacity:1; }
+    50%{ opacity:0; }
+}
+
+.closeBtn{
+    position:absolute;
+    top:15px;
+    right:20px;
+    background:none;
+    border:none;
+    color:#888;
+    font-size:22px;
+    cursor:pointer;
+    transition:color 0.3s;
+}
+
+.closeBtn:hover{
+    color:#ff286c;
+}
+
+/* Floating click hearts */
+.clickHeart{
+    position:absolute;
+    color:#ff286c;
+    font-size:16px;
+    pointer-events:none;
+    z-index:500;
+    animation:floatHeart 1.2s ease-out forwards;
+}
+
+@keyframes floatHeart{
+    0%{ opacity:1; transform:translate(-50%,-50%) scale(.6); }
+    100%{ opacity:0; transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.4); }
+}
+
+@media(max-width:600px){
+    .rozy{ font-size:36px; }
+    .letterPaper{ padding:30px 20px; }
+    .letterContent{ font-size:15px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- PASSWORD SCREEN -->
+<section id="passwordScreen">
+    <div class="passwordBox">
+        <div class="lockHeart">❤️</div>
+        <div class="passwordTitle">الباسورد يكوكي ❤️ </div>
+        <div class="passwordSub">Enter the secret code</div>
+        <div id="display" class="display">••••</div>
+        <div class="keypad">
+            <button class="key" onclick="press(1)">1</button>
+            <button class="key" onclick="press(2)">2</button>
+            <button class="key" onclick="press(3)">3</button>
+            <button class="key" onclick="press(4)">4</button>
+            <button class="key" onclick="press(5)">5</button>
+            <button class="key" onclick="press(6)">6</button>
+            <button class="key" onclick="press(7)">7</button>
+            <button class="key" onclick="press(8)">8</button>
+            <button class="key" onclick="press(9)">9</button>
+            <button class="key clearKey" onclick="clearCode()">C</button>
+            <button class="key" onclick="press(0)">0</button>
+            <button class="key enterKey" onclick="checkCode()">✓</button>
+        </div>
+        <div id="error" class="error">اسمك ❤️</div>
+    </div>
+</section>
+
+<!-- LOADING SCREEN -->
+<section id="loadingScreen">
+    <div class="loadingHeart"></div>
+    <div class="loadingText">LOADING OUR STORY...</div>
+    <div class="loadingBar">
+        <div id="loadingProgress" class="loadingProgress"></div>
+    </div>
+</section>
+
+<!-- MAIN 3D SCENE -->
+<main id="main">
+    <div id="stars"></div>
+    
+    <!-- 3D Transform Container -->
+    <div id="heartContainer3D">
+        <div id="wordHeart"></div>
+        <div class="orbit">
+            <div class="orbitHeart"></div>
+        </div>
+        
+        <div id="rozyCenter" ondblclick="openLetter()">
+            <div class="rozy">ROZY</div>
+            <div class="hint">Double click me</div>
+        </div>
+    </div>
+
+    <div class="bottom">
+        <div class="coded">I CODED THIS HEARTBEAT</div>
+        <div class="loveText">For You <span class="loveHeart">❤️</span></div>
+    </div>
+</main>
+
+<!-- LETTER MODAL -->
+<div id="letterModal">
+    <div class="letterPaper">
+        <button class="closeBtn" onclick="closeLetter()">✕</button>
+        <div class="letterContent"><span id="typedText"></span><span class="cursor"></span></div>
+    </div>
+</div>
+
+<script>
+/* =========================================================
+   PASSWORD SYSTEM
+========================================================= */
+const PASSWORD = "7699";
+let entered = "";
+
+const display = document.getElementById("display");
+const error = document.getElementById("error");
+
+function press(number){
+    if(entered.length >= 4) return;
+    entered += number;
+    display.textContent = "•".repeat(entered.length);
+    error.classList.remove("show");
+}
+
+function clearCode(){
+    entered = "";
+    display.textContent = "••••";
+    error.classList.remove("show");
+}
+
+function checkCode(){
+    if(entered === PASSWORD){
+        const screen = document.getElementById("passwordScreen");
+        screen.style.opacity = "0";
+        screen.style.visibility = "hidden";
+        startLoading();
+    } else {
+        error.classList.add("show");
+        entered = "";
+        display.textContent = "••••";
+    }
+}
+
+document.addEventListener("keydown", function(e){
+    if(e.key >= "0" && e.key <= "9") press(Number(e.key));
+    if(e.key === "Enter") checkCode();
+    if(e.key === "Backspace"){
+        entered = entered.slice(0,-1);
+        display.textContent = entered.length ? "•".repeat(entered.length) : "••••";
+    }
+});
+
+/* =========================================================
+   LOADING
+========================================================= */
+function startLoading(){
+    const loading = document.getElementById("loadingScreen");
+    loading.classList.add("show");
+    let progress = 0;
+
+    const timer = setInterval(() => {
+        progress += Math.random()*5 + 2;
+        if(progress >= 100){
+            progress = 100;
+            clearInterval(timer);
+            setTimeout(startMain, 600);
+        }
+        document.getElementById("loadingProgress").style.width = progress + "%";
+    }, 70);
+}
+
+/* =========================================================
+   MAIN SCENE START
+========================================================= */
+function startMain(){
+    document.getElementById("loadingScreen").classList.remove("show");
+
+    setTimeout(() => {
+        document.getElementById("main").classList.add("show");
+        createStars();
+        setTimeout(createWords3D, 500);
+        setTimeout(showCenter, 2500);
+    }, 600);
+}
+
+function createStars(){
+    const container = document.getElementById("stars");
+    for(let i=0; i<120; i++){
+        const star = document.createElement("div");
+        star.className = "star";
+        star.style.left = Math.random()*100 + "%";
+        star.style.top = Math.random()*100 + "%";
+        star.style.animationDelay = Math.random()*3 + "s";
+        container.appendChild(star);
+    }
+}
+
+/* =========================================================
+   3D HEART & WORDS
+========================================================= */
+const phrases = [
+    "I Love You", "Forever", "My Everything", "Always",
+    "My Soulmate", "Sweetheart", "Only You", "My World",
+    "Endless Love", "My Heart", "Together", "My Joy",
+    "You & Me", "Pure Love", "My Destiny", "I Need You"
+];
+
+function heartPoint(t){
+    const x = 16 * Math.pow(Math.sin(t), 3);
+    const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+    return { x: x, y: -y };
+}
+
+function createWords3D(){
+    const container = document.getElementById("wordHeart");
+    const count = 80;
+    const isMobile = window.innerWidth <= 600;
+    const scaleFactor = isMobile ? 9 : 14;
+
+    for(let i = 0; i < count; i++){
+        const t = (i / count) * Math.PI * 2;
+        const pt = heartPoint(t);
+
+        const x = pt.x * scaleFactor;
+        const y = pt.y * scaleFactor;
+        // Depth factor (Z axis) for 3D depth effect
+        const z = (Math.sin(t * 2) * 40) + (Math.random() * 20 - 10);
+
+        const word = document.createElement("div");
+        word.className = "word";
+        word.textContent = phrases[i % phrases.length];
+
+        const rotZ = (Math.random() - 0.5) * 15;
+        const scale = 0.85 + Math.random() * 0.3;
+
+        word.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) rotateZ(${rotZ}deg) scale(${scale})`;
+
+        container.appendChild(word);
+
+        setTimeout(() => {
+            word.classList.add("visible");
+        }, i * 30);
+    }
+}
+
+function showCenter(){
+    document.getElementById("rozyCenter").classList.add("show");
+    document.querySelector(".orbit").classList.add("show");
+    document.querySelector(".bottom").classList.add("show");
+}
+
+/* =========================================================
+   INTERACTIVE 3D TILT EFFECT (MOUSE & TOUCH)
+========================================================= */
+const container3D = document.getElementById("heartContainer3D");
+
+document.addEventListener("mousemove", (e) => {
+    if(!document.getElementById("main").classList.contains("show")) return;
+    
+    const xAxis = (window.innerWidth / 2 - e.clientX) / 25;
+    const yAxis = (window.innerHeight / 2 - e.clientY) / 25;
+    
+    container3D.style.transform = `rotateY(${-xAxis}deg) rotateX(${yAxis}deg)`;
+});
+
+document.addEventListener("touchmove", (e) => {
+    if(!document.getElementById("main").classList.contains("show")) return;
+    if(e.touches.length > 0){
+        const touch = e.touches[0];
+        const xAxis = (window.innerWidth / 2 - touch.clientX) / 20;
+        const yAxis = (window.innerHeight / 2 - touch.clientY) / 20;
+        
+        container3D.style.transform = `rotateY(${-xAxis}deg) rotateX(${yAxis}deg)`;
+    }
+});
+
+/* =========================================================
+   DOUBLE CLICK LETTER WRITER (Typewriter Effect)
+========================================================= */
+const letterMessage = 
+`روزي ..
+ حياتي ..
+ و عمري كله ..
+بحبك .
+و لو هفضل اقول من هنا لبكره مش هيكفي حبي ليكي يعمري .
+هفضل احبك من هنا لحد ما اموت .
+دي حاجه كد بسيطه عشان بس وحشتني بصتي للاب و كتابتي للاكواد .. عشان كده قررت اطلع .
+هتسأليني عملته ازاي هقولك انا كتبت اكواد الاساسيه و جيميناي كتب الانميشن لانه بكذا لغه بـ بايثون و چافا سكربت .. انا حافظ چافا سكربت .. بس الانميشن بيتكتب من اعماق چافا .. ونا مفيش وقت اتعمق يعني .
+ف بحبك ينور عيوني .. و اه صح دلوقتي حالا فوني صفر فالميه ازاي معرفش بس هو والله صفر
+"ظننته حبًّا عابرًا فأصبح وطنٌ أريد أن أقضي فيه بقيّة عمري!"`;
+
+let isTyping = false;
+let typeIndex = 0;
+let typeTimer = null;
+
+function openLetter(){
+    const modal = document.getElementById("letterModal");
+    const typedContainer = document.getElementById("typedText");
+    
+    modal.classList.add("show");
+    typedContainer.textContent = "";
+    typeIndex = 0;
+    
+    if(!isTyping){
+        isTyping = true;
+        typeWriter();
+    }
+}
+
+function typeWriter(){
+    const typedContainer = document.getElementById("typedText");
+    if (typeIndex < letterMessage.length) {
+        typedContainer.textContent += letterMessage.charAt(typeIndex);
+        typeIndex++;
+        typeTimer = setTimeout(typeWriter, 45);
+    } else {
+        isTyping = false;
+    }
+}
+
+function closeLetter(){
+    const modal = document.getElementById("letterModal");
+    modal.classList.remove("show");
+    clearTimeout(typeTimer);
+    isTyping = false;
+}
+
+/* Click particle hearts */
+document.addEventListener("click", function(e){
+    if(!document.getElementById("main").classList.contains("show")) return;
+    if(document.getElementById("letterModal").classList.contains("show")) return;
+
+    const heart = document.createElement("div");
+    heart.className = "clickHeart";
+    heart.textContent = "❤️";
+    heart.style.left = e.clientX + "px";
+    heart.style.top = e.clientY + "px";
+
+    const dx = (Math.random() - 0.5) * 80 + "px";
+    const dy = (Math.random() - 1) * 80 - 20 + "px";
+
+    heart.style.setProperty("--dx", dx);
+    heart.style.setProperty("--dy", dy);
+
+    document.body.appendChild(heart);
+
+    setTimeout(() => { heart.remove(); }, 1200);
+});
+</script>
+</body>
+</html>
